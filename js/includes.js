@@ -3,13 +3,25 @@
    Load navbar and footer from external files
    ======================================== */
 
-// Function to load HTML includes
+// Start fetching immediately (Prefetch) to minimize loading delay
+const navbarFetch = fetch("includes/navbar.html").then((res) => res.text());
+const footerFetch = fetch("includes/footer.html").then((res) => res.text());
+
+// Function to load HTML includes into the DOM
 function loadIncludes() {
   // Load Navbar
-  fetch("includes/navbar.html")
-    .then((response) => response.text())
+  navbarFetch
     .then((data) => {
-      document.getElementById("navbar-placeholder").innerHTML = data;
+      const placeholder = document.getElementById("navbar-placeholder");
+      if (placeholder) {
+        placeholder.innerHTML = data;
+        // Remove skeleton styling after load to avoid double backdrop-filter
+        placeholder.style.background = "transparent";
+        placeholder.style.backdropFilter = "none";
+        placeholder.style.boxShadow = "none";
+        placeholder.style.height = "auto";
+      }
+      
       // Set active menu after navbar is loaded
       setActiveMenu();
       // Initialize navigation after navbar is loaded
@@ -20,10 +32,12 @@ function loadIncludes() {
     .catch((error) => console.error("Error loading navbar:", error));
 
   // Load Footer
-  fetch("includes/footer.html")
-    .then((response) => response.text())
+  footerFetch
     .then((data) => {
-      document.getElementById("footer-placeholder").innerHTML = data;
+      const placeholder = document.getElementById("footer-placeholder");
+      if (placeholder) {
+        placeholder.innerHTML = data;
+      }
       // Initialize scroll to top button after footer is loaded
       if (typeof ScrollToTopModule !== "undefined") {
         ScrollToTopModule.init();
@@ -51,3 +65,4 @@ if (document.readyState === "loading") {
 } else {
   loadIncludes();
 }
+
